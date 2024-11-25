@@ -1,0 +1,11 @@
+body:hover{
+  cursor: crosshair;
+}
+body{
+  overflow: hidden;
+
+}
+
+html{
+  overflow: hidden;
+}
