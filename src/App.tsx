@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 // import axios from "axios";
 import { COLORS } from "./colors";
+import { Touch } from "./Touch";
+import { Help } from "./Help";
 
 function getRandomChakraColorName() {
   const chakraColorNames = [
@@ -36,13 +38,26 @@ function getRandomHexColor(palette?: string) {
     .padStart(6, "0")}`;
 }
 
-const Cell = ({ palette }: any) => {
+const Cell = ({ palette, scale, allActive, currentPosition, x, y, ludicrisMode }: any) => {
+  console.log(currentPosition);
   const [active, setActive] = useState(false);
 
   const handleHover = async () => {
     setActive(true);
     // await axios.post(`/api/cell`, [x, y]);
   };
+
+  useEffect(() => {
+    if (currentPosition.x === x && currentPosition.y === y) {
+      setActive(true);
+    }
+  }, [currentPosition]);
+
+  useEffect(() => {
+    if (allActive) {
+      setActive(true);
+    }
+  }, [allActive]);
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
@@ -58,30 +73,56 @@ const Cell = ({ palette }: any) => {
     };
   }, []);
 
-  return (
-    <div
-      style={{
-        height: "10px",
-        width: "10px",
-        backgroundColor: active ? `${getRandomHexColor(palette)}` : "black",
-        borderRadius: "10px",
-      }}
-      className="cell"
-      onMouseOver={() => handleHover()}
-    />
-  );
+  useEffect(() => {
+    
+  }, [ludicrisMode])
+
+  const memorized = useMemo(() => {
+    return (
+      <div
+        style={{
+          height: `${scale}px`,
+          width: `${scale}px`,
+          backgroundColor: active ? `${getRandomHexColor(palette)}` : "black",
+          borderRadius: `${scale}px`,
+        }}
+        className="cell"
+        data-test-x={x}
+        data-test-y={y}
+        onMouseOver={() => handleHover()}
+      />
+    );
+  }, [scale, palette, active]);
+
+  return <>{memorized}</>;
 };
 
 function App() {
-  const rowsHeight = window.innerWidth / 10;
-  const rowsWidth = window.innerHeight / 10;
-  const rows = Array.from({ length: rowsHeight }, (_, i) => i + 1);
-  const columns = Array.from({ length: rowsWidth }, (_, i) => i + 1);
   const [palette, setPalette] = useState("");
   const [show, setShow] = useState(false);
+  const [scale, setScale] = useState(20);
+  const [allActive, setAllActive] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  const rowsHeight = window.innerWidth / scale;
+  const rowsWidth = window.innerHeight / scale;
+  const rows = Array.from({ length: rowsHeight }, (_, i) => i + 1);
+  const columns = Array.from({ length: rowsWidth }, (_, i) => i + 1);
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
+      if (event.key === "h" || event.key === "H") {
+        setShowHelp(!showHelp);
+      }
+      if (event.key === "a" || event.key === "A") {
+        setAllActive(!allActive);
+      }
+      if (event.key === "-") {
+        setScale(scale + 1);
+      }
+      if (event.key === "=") {
+        setScale(scale - 1);
+      }
       if (event.key === "p" || event.key === "P") {
         setPalette(getRandomChakraColorName());
       }
@@ -89,9 +130,9 @@ function App() {
         const getPalatte = () => {
           setPalette(getRandomChakraColorName());
           // if (show) {
-            setTimeout(() => {
-              getPalatte();
-            }, 2000);
+          setTimeout(() => {
+            getPalatte();
+          }, 2000);
           // }
         };
         setShow(!show);
@@ -105,28 +146,57 @@ function App() {
     return () => {
       window.removeEventListener("keypress", handleKeyPress);
     };
-  }, [show]);
+  }, [show, scale]);
+
+  const [currentPosition, setCurrentPosition] = useState({ x: null, y: null });
+  console.log({ currentPosition });
+
+  const handleTouchMove = (e: any) => {
+    // Get the current touch position
+    const currentTouch = {
+      x: Math.floor(e.touches[0].clientX / scale),
+      y: Math.floor(e.touches[0].clientY / scale),
+    };
+    // Optionally, update touchStart if needed to track dragging
+    // @ts-ignore
+    setCurrentPosition(currentTouch);
+  };
+
+  const onClose = () => {
+    setShowHelp(false);
+  };
 
   return (
     <div
-      className="container"
       style={{ display: "flex", flexDirection: "column" }}
+      onTouchMove={handleTouchMove}
     >
-      {columns.map((column, columnI) => {
-        return (
-          <div
-            className="row"
-            key={column + columnI}
-            style={{ display: "flex", flexDirection: "row" }}
-          >
-            {rows.map((row, rowI) => {
-              return (
-                <Cell palette={palette} x={rowI} y={columnI} key={row + rowI} />
-              );
-            })}
-          </div>
-        );
-      })}
+      <Touch />
+      <Help
+        setPalette={setPalette}
+        palette={palette}
+        showHelp={showHelp}
+        onClose={onClose}
+      />
+      {columns.map((column, columnI) => (
+        <div
+          className="row"
+          key={column + columnI}
+          style={{ display: "flex", flexDirection: "row" }}
+        >
+          {rows.map((row, rowI) => (
+            <Cell
+              scale={scale}
+              palette={palette}
+              allActive={allActive}
+              x={rowI}
+              y={columnI}
+              currentPosition={currentPosition}
+              key={row + rowI}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
