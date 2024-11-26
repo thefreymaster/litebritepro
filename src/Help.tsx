@@ -46,6 +46,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
             <ShortCut shortcut="S" title="Start Show" />
             <ShortCut shortcut="A" title="Fill All" />
             <ShortCut shortcut="C" title="Clear" />
+            <ShortCut shortcut="R" title="Reload" />
             <ShortCut shortcut="-" title="Decrease Scale" />
             <ShortCut shortcut="+" title="Increase Scale" />
             <Divider />

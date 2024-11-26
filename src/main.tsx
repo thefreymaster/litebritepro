@@ -7,6 +7,10 @@ import theme from "./theme.ts";
 // Import the functions you need from the SDKs you need
 import { ChakraProvider } from "@chakra-ui/react";
 
+const [html] = document.getElementsByTagName('html');
+
+html.style.backgroundColor = "#000";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ChakraProvider theme={theme}>

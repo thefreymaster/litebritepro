@@ -4,6 +4,7 @@ import "./App.css";
 import { COLORS } from "./colors";
 import { Touch } from "./Touch";
 import { Help } from "./Help";
+import { useDeviceSize } from "./hooks/useDeviceSize";
 
 function getRandomChakraColorName() {
   const chakraColorNames = [
@@ -38,8 +39,7 @@ function getRandomHexColor(palette?: string) {
     .padStart(6, "0")}`;
 }
 
-const Cell = ({ palette, scale, allActive, currentPosition, x, y, ludicrisMode }: any) => {
-  console.log(currentPosition);
+const Cell = ({ palette, scale, allActive, currentPosition, x, y }: any) => {
   const [active, setActive] = useState(false);
 
   const handleHover = async () => {
@@ -73,10 +73,6 @@ const Cell = ({ palette, scale, allActive, currentPosition, x, y, ludicrisMode }
     };
   }, []);
 
-  useEffect(() => {
-    
-  }, [ludicrisMode])
-
   const memorized = useMemo(() => {
     return (
       <div
@@ -104,13 +100,35 @@ function App() {
   const [allActive, setAllActive] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
+  const { isMobile } = useDeviceSize();
+
   const rowsHeight = window.innerWidth / scale;
   const rowsWidth = window.innerHeight / scale;
   const rows = Array.from({ length: rowsHeight }, (_, i) => i + 1);
   const columns = Array.from({ length: rowsWidth }, (_, i) => i + 1);
 
   useEffect(() => {
+    if (isMobile) {
+      setTimeout(() => {
+        const getPalatte = () => {
+          setPalette(getRandomChakraColorName());
+          // if (show) {
+          setTimeout(() => {
+            getPalatte();
+          }, 2000);
+          // }
+        };
+        setShow(!show);
+        getPalatte();
+      }, 7500);
+    }
+  }, [isMobile, show]);
+
+  useEffect(() => {
     const handleKeyPress = (event: any) => {
+      if (event.key === "r" || event.key === "R") {
+        window.location.reload();
+      }
       if (event.key === "h" || event.key === "H") {
         setShowHelp(!showHelp);
       }
@@ -149,7 +167,6 @@ function App() {
   }, [show, scale]);
 
   const [currentPosition, setCurrentPosition] = useState({ x: null, y: null });
-  console.log({ currentPosition });
 
   const handleTouchMove = (e: any) => {
     // Get the current touch position
@@ -157,7 +174,6 @@ function App() {
       x: Math.floor(e.touches[0].clientX / scale),
       y: Math.floor(e.touches[0].clientY / scale),
     };
-    // Optionally, update touchStart if needed to track dragging
     // @ts-ignore
     setCurrentPosition(currentTouch);
   };
