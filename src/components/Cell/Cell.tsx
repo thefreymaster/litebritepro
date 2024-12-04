@@ -56,13 +56,16 @@ export const Cell = ({
 
   useEffect(() => {
     if (currentPosition.x === x && currentPosition.y === y) {
-      socket.emit("cellActivated", {
+      setActive(true);
+      console.log({
         x: currentPosition.x,
         y: currentPosition.y,
         sessionId,
       });
+      socket.emit("cellActivated", { x, y, sessionId });
+
     }
-  }, [currentPosition]);
+  }, [currentPosition, sessionId]);
 
   useEffect(() => {
     if (allActive) {

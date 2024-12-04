@@ -1,39 +1,34 @@
 import express from "express";
 import cors from "cors";
 import http from "http";
+import path from "path";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import dbPromise from "./database.js";
 import { Server } from "socket.io";
 
-// Setup __dirname in ES module
-const __dirname = dirname(fileURLToPath(import.meta.url));
+ // Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Initialize Express
+
+// Initialize Express  ------------------------------------------------------------
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: '*', // Update this to match your client URL in production
-        methods: ['GET', 'POST'],
-    },
+  cors: {
+    origin: "*", // Update this to match your client URL in production
+    methods: ["GET", "POST"],
+  },
 });
 
-// Middleware for JSON body parsing
+// Middlewares -------------------------------------------------------------
 app.use(express.json());
 app.use(cors());
-
-// Serve static files from React's build directory
-app.use(express.static(join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.post("/v1/session/create", async (req, res) => {
   console.log({ endpoint: "/v1/session/create" });
   const sessionId = Math.random().toString(36).substr(2, 4); // Generate 4-character session ID
-  const db = await dbPromise;
-  await db.run("INSERT INTO sessions (session_id, grid) VALUES (?, ?)", [
-    sessionId,
-    "{}",
-  ]);
   res.json({ sessionId });
 });
 
@@ -48,22 +43,17 @@ app.post("/v1/cell", (req, res) => {
   print(data);
 });
 
-// Catch-all handler for React app
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, "build", "index.html"));
-});
-
 let activeCells = new Set();
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log("A user connected", socket);
 
   // Send the current active cells to the newly connected client
   socket.emit("initialize", Array.from(activeCells)); // Convert Set to Array for serialization
 
   // Handle cell activation from clients
   socket.on("cellActivated", ({ x, y, sessionId }) => {
-    console.log({ x, y });
+    console.log({ sessionId, x, y });
     const cellKey = `${x},${y}`;
     activeCells.add(cellKey);
 
@@ -74,6 +64,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 // Start the server

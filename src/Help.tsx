@@ -19,9 +19,11 @@ import {
   Divider,
   Text,
   Fade,
+  IconButton,
 } from "@chakra-ui/react";
 import { COLORS } from "./colors";
 import { useEffect, useState } from "react";
+import { LuHelpCircle } from "react-icons/lu";
 
 const ShortCut = ({ shortcut, title }) => {
   return (

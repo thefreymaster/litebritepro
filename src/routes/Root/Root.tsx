@@ -3,13 +3,14 @@ import "../../App.css";
 // import axios from "axios";
 import { Touch } from "../../Touch";
 import { Help } from "../../Help";
-import { useDeviceSize } from "../../hooks/useDeviceSize";
+// import { useDeviceSize } from "../../hooks/useDeviceSize";
 import { Cell } from "../../components/Cell/Cell";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api/api";
 import { io } from "socket.io-client";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Slide } from "@chakra-ui/react";
 
-const socket = io("ws://localhost:5001");
+const socket = io(window.location.origin);
 
 function getRandomChakraColorName() {
   const chakraColorNames = [
@@ -30,13 +31,14 @@ function getRandomChakraColorName() {
 }
 
 function Root() {
+  const [isConnected, setIsConnected] = useState(false);
   const [palette, setPalette] = useState("");
   const [show, setShow] = useState(false);
   const [scale, setScale] = useState(20);
   const [allActive, setAllActive] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  const { isMobile } = useDeviceSize();
+  //   const { isMobile } = useDeviceSize();
   const navigate = useNavigate();
   const { sessionId } = useParams();
 
@@ -45,22 +47,22 @@ function Root() {
   const rows = Array.from({ length: rowsHeight }, (_, i) => i + 1);
   const columns = Array.from({ length: rowsWidth }, (_, i) => i + 1);
 
-  useEffect(() => {
-    if (isMobile) {
-      setTimeout(() => {
-        const getPalatte = () => {
-          setPalette(getRandomChakraColorName());
-          // if (show) {
-          setTimeout(() => {
-            getPalatte();
-          }, 2000);
-          // }
-        };
-        setShow(!show);
-        getPalatte();
-      }, 7500);
-    }
-  }, [isMobile, show]);
+  //   useEffect(() => {
+  //     if (isMobile) {
+  //       setTimeout(() => {
+  //         const getPalatte = () => {
+  //           setPalette(getRandomChakraColorName());
+  //           // if (show) {
+  //           setInterval(() => {
+  //             getPalatte();
+  //           }, 2000);
+  //           // }
+  //         };
+  //         setShow(!show);
+  //         getPalatte();
+  //       }, 7500);
+  //     }
+  //   }, []);
 
   const createSession = async () => {
     try {
@@ -78,10 +80,11 @@ function Root() {
   useEffect(() => {
     if (sessionId) {
       socket.on("connect", () => {
+        setIsConnected(true);
         console.log("Connected to server with ID:", socket.id);
       });
     }
-  }, [sessionId]);
+  }, [sessionId, isConnected]);
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
@@ -143,15 +146,19 @@ function Root() {
     setShowHelp(false);
   };
 
-  const [collection, setCollection] = useState(
-    columns.map(() => rows.map(() => false))
-  );
-
   return (
     <div
       style={{ display: "flex", flexDirection: "column" }}
       onTouchMove={handleTouchMove}
     >
+      <Slide direction="top" in={!isConnected} style={{ zIndex: 10 }}>
+        <Alert variant="solid" status={isConnected ? "success" : "error"}>
+          <AlertIcon />
+          <AlertTitle>{isConnected ? "Connected" : `Disconnected`}</AlertTitle>
+          <AlertDescription>Session: <Badge>{sessionId}</Badge></AlertDescription>
+        </Alert>
+      </Slide>
+
       <Touch />
       <Help
         setPalette={setPalette}
