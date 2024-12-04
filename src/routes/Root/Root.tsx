@@ -17,48 +17,30 @@ import {
   Tooltip,
   // Slide,
 } from "@chakra-ui/react";
-import { VscDebugRestart, VscDebugStart } from "react-icons/vsc";
+import { VscDebugStart } from "react-icons/vsc";
 import { LuUnplug } from "react-icons/lu";
 import { PiPlugsConnectedFill } from "react-icons/pi";
+import { RiPaletteFill } from "react-icons/ri";
 
 const socket = io(window.location.origin);
 
-const NewSession = ({ handleCreateSession, setSessionIdInput }: any) => {
-  const navigate = useNavigate();
-
-  return (
-    <Text>
-      <Tooltip hasArrow label="Restart">
-        <IconButton
-          aria-label={"restart"}
-          icon={<VscDebugRestart />}
-          onClick={() => {
-            navigate("/");
-            setSessionIdInput("");
-            handleCreateSession();
-          }}
-        >
-          Restart
-        </IconButton>
-      </Tooltip>
-    </Text>
-  );
-};
-
 const StartSession = ({ handleCreateSession }: any) => (
-  <Text>
-    <HStack>
-      <Tooltip hasArrow label="Start">
-        <IconButton
-          icon={<VscDebugStart />}
-          onClick={handleCreateSession}
-          aria-label={"start"}
-        >
-          Start
-        </IconButton>
-      </Tooltip>
-    </HStack>
-  </Text>
+  <>
+    <Text>
+      <HStack>
+        <Tooltip hasArrow label="Start">
+          <IconButton
+            icon={<VscDebugStart />}
+            onClick={handleCreateSession}
+            aria-label={"start"}
+          >
+            Start
+          </IconButton>
+        </Tooltip>
+      </HStack>
+    </Text>
+    <Box margin="5px" />
+  </>
 );
 
 const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
@@ -111,28 +93,12 @@ function Root() {
   const rows = Array.from({ length: rowsHeight }, (_, i) => i + 5);
   const columns = Array.from({ length: rowsWidth }, (_, i) => i + 5);
 
-  //   useEffect(() => {
-  //     if (isMobile) {
-  //       setTimeout(() => {
-  //         const getPalatte = () => {
-  //           setPalette(getRandomChakraColorName());
-  //           // if (show) {
-  //           setInterval(() => {
-  //             getPalatte();
-  //           }, 2000);
-  //           // }
-  //         };
-  //         setShow(!show);
-  //         getPalatte();
-  //       }, 7500);
-  //     }
-  //   }, []);
-
   const createSession = async () => {
     try {
       const response = await api.create.session();
       navigate(`/${response.data.sessionId}`);
-      window.location.reload();
+      setSessionIdInput(response.data.sessionId);
+      // window.location.reload();
     } catch (error) {
       console.error("Error creating session:", error);
     }
@@ -158,6 +124,14 @@ function Root() {
     }
   };
 
+  const handlePaletteChange = () => {
+    const color = getRandomChakraColorName();
+    setPalette(color);
+    if (sessionId) {
+      socket.emit("palette", { palette: color });
+    }
+  };
+
   useEffect(() => {
     const handleKeyPress = (event: any) => {
       if (event.key === "m" || event.key === "M") {
@@ -176,11 +150,7 @@ function Root() {
         setScale(scale + 1);
       }
       if (event.key === "p" || event.key === "P") {
-        const color = getRandomChakraColorName();
-        setPalette(color);
-        if (sessionId) {
-          socket.emit("palette", { palette: color });
-        }
+        handlePaletteChange();
       }
       if (event.key === "s" || event.key === "S") {
         const getPalatte = () => {
@@ -289,16 +259,16 @@ function Root() {
         </Box>
         <Text color="white">{isConnected ? `Coop` : "Solo"}</Text>
         <Flex flex={1} />
+        <IconButton
+          icon={<RiPaletteFill />}
+          aria-label={"palette"}
+          onClick={handlePaletteChange}
+          colorScheme={palette}
+        />
+        <Box margin="5px" />
         {!sessionId && (
           <StartSession handleCreateSession={handleCreateSession} />
         )}
-        {sessionId && (
-          <NewSession
-            handleCreateSession={handleCreateSession}
-            setSessionIdInput={setSessionIdInput}
-          />
-        )}
-        <Box margin="5px" />
         <ActiveSession
           sessionIdInput={sessionIdInput}
           handleInputChange={handleInputChange}

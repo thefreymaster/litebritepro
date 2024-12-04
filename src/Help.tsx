@@ -61,7 +61,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
             fontSize: 14,
             position: "fixed",
             left: "calc(50vw - 50px)",
-            bottom: "20px",
+            top: "20px",
             zIndex: 100,
           }}
         >
