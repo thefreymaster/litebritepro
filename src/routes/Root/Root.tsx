@@ -99,7 +99,7 @@ function Root() {
       const response = await api.create.session();
       navigate(`/${response.data.sessionId}`);
       setSessionIdInput(response.data.sessionId);
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.error("Error creating session:", error);
     }

@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import path from "path";
-import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 
