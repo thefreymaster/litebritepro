@@ -9,7 +9,6 @@ import { io } from "socket.io-client";
 import {
   Alert,
   AlertDescription,
-  AlertIcon,
   AlertTitle,
   Box,
   Flex,
@@ -20,6 +19,8 @@ import {
   // Slide,
 } from "@chakra-ui/react";
 import { VscDebugRestart, VscDebugStart } from "react-icons/vsc";
+import { LuUnplug } from "react-icons/lu";
+import { PiPlugsConnectedFill } from "react-icons/pi";
 
 const socket = io(window.location.origin);
 
@@ -65,10 +66,10 @@ const StartSession = ({ handleCreateSession }: any) => (
 const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
   <AlertDescription>
     <Input
-      maxW="150px"
+      maxW="120px"
       value={sessionIdInput}
       onChange={(e) => handleInputChange(e)}
-      placeholder="Session Code"
+      placeholder="Join Code"
     />
   </AlertDescription>
 );
@@ -237,8 +238,10 @@ function Root() {
         bottom="0"
         status={isConnected ? "success" : "info"}
       >
-        <AlertIcon />
-        <AlertTitle>{isConnected ? "Connected" : `Disconnected`}</AlertTitle>
+        <Box margin="2">
+          {isConnected ? <PiPlugsConnectedFill /> : <LuUnplug />}
+        </Box>
+        <AlertTitle>{isConnected ? `Coop` : "Solo"}</AlertTitle>
         <Flex flex={1} />
         {!sessionId && (
           <StartSession handleCreateSession={handleCreateSession} />
