@@ -51,6 +51,7 @@ const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
       onChange={(e) => handleInputChange(e)}
       placeholder="Join Code"
       color="white"
+      variant="filled"
     />
   </Text>
 );
@@ -250,6 +251,8 @@ function Root() {
         backgroundColor={theme.colors?.[palette || "gray"]["900"]}
         alignItems="center"
       >
+        {/* <Text color={theme.colors?.[palette || "gray"]["300"]} fontWeight="medium">LiteBritePro</Text>
+        <Flex flex={1} /> */}
         <Box margin="2">
           {isConnected ? (
             <PiPlugsConnectedFill
@@ -263,12 +266,13 @@ function Root() {
           {isConnected ? `Coop` : "Solo"}
         </Text>
         <Flex flex={1} />
-        <IconButton
-          icon={<RiPaletteFill />}
-          aria-label={"palette"}
-          onClick={handlePaletteChange}
-          colorScheme={palette ?? "gray"}
-        />
+        <Tooltip label="Color Palette" hasArrow>
+          <IconButton
+            icon={<RiPaletteFill />}
+            aria-label={"palette"}
+            onClick={handlePaletteChange}
+          />
+        </Tooltip>
         <Box margin="5px" />
         {!sessionId && (
           <StartSession handleCreateSession={handleCreateSession} />
