@@ -24,6 +24,7 @@ import {
 import { COLORS } from "./colors";
 import { useEffect, useState } from "react";
 import { LuHelpCircle } from "react-icons/lu";
+import { useDeviceSize } from "./hooks/useDeviceSize";
 
 const ShortCut = ({ shortcut, title }) => {
   return (
@@ -35,6 +36,7 @@ const ShortCut = ({ shortcut, title }) => {
 };
 
 export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
+  const { isDesktop } = useDeviceSize();
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const handleChange = (e) => {
     setPalette(e.target.value);
@@ -51,22 +53,24 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
 
   return (
     <>
-      <Fade
-        in={showHelpDialog}
-        style={{
-          color: "white",
-          fontSize: 14,
-          position: "fixed",
-          left: "calc(50vw - 50px)",
-          bottom: "20px",
-          zIndex: 100,
-        }}
-      >
-        <HStack>
-          <Kbd>H</Kbd>
-          <Text>Tap H for help</Text>
-        </HStack>
-      </Fade>
+      {isDesktop && (
+        <Fade
+          in={showHelpDialog}
+          style={{
+            color: "white",
+            fontSize: 14,
+            position: "fixed",
+            left: "calc(50vw - 50px)",
+            bottom: "20px",
+            zIndex: 100,
+          }}
+        >
+          <HStack>
+            <Kbd>H</Kbd>
+            <Text>Tap H for help</Text>
+          </HStack>
+        </Fade>
+      )}
       <Modal isOpen={showHelp} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -74,6 +78,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
           <ModalCloseButton />
           <ModalBody>
             <VStack display="flex" alignItems="flex-start">
+              <ShortCut shortcut="M" title="Multiplayer" />
               <ShortCut shortcut="P" title="Color Palette" />
               <ShortCut shortcut="S" title="Start Show" />
               <ShortCut shortcut="A" title="Fill All" />

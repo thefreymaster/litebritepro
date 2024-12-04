@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import "../../App.css";
-// import axios from "axios";
 import { Touch } from "../../Touch";
 import { Help } from "../../Help";
-// import { useDeviceSize } from "../../hooks/useDeviceSize";
 import { Cell } from "../../components/Cell/Cell";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api/api";
@@ -13,11 +11,67 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Badge,
-  Slide,
+  Box,
+  Flex,
+  HStack,
+  IconButton,
+  Input,
+  Tooltip,
+  // Slide,
 } from "@chakra-ui/react";
+import { VscDebugRestart, VscDebugStart } from "react-icons/vsc";
 
 const socket = io(window.location.origin);
+
+const NewSession = ({ handleCreateSession, setSessionIdInput }: any) => {
+  const navigate = useNavigate();
+
+  return (
+    <AlertDescription>
+      <Tooltip hasArrow label="Restart">
+        <IconButton
+          aria-label={"restart"}
+          icon={<VscDebugRestart />}
+          onClick={() => {
+            navigate("/");
+            socket.emit("clear");
+            setSessionIdInput();
+            handleCreateSession();
+          }}
+        >
+          Restart
+        </IconButton>
+      </Tooltip>
+    </AlertDescription>
+  );
+};
+
+const StartSession = ({ handleCreateSession }: any) => (
+  <AlertDescription>
+    <HStack>
+      <Tooltip hasArrow label="Start">
+        <IconButton
+          icon={<VscDebugStart />}
+          onClick={handleCreateSession}
+          aria-label={"start"}
+        >
+          Start
+        </IconButton>
+      </Tooltip>
+    </HStack>
+  </AlertDescription>
+);
+
+const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
+  <AlertDescription>
+    <Input
+      maxW="150px"
+      value={sessionIdInput}
+      onChange={(e) => handleInputChange(e)}
+      placeholder="Session Code"
+    />
+  </AlertDescription>
+);
 
 function getRandomChakraColorName() {
   const chakraColorNames = [
@@ -49,6 +103,8 @@ function Root() {
   const navigate = useNavigate();
   const { sessionId } = useParams();
 
+  const [sessionIdInput, setSessionIdInput] = useState(sessionId);
+
   const rowsHeight = window.innerWidth / scale;
   const rowsWidth = window.innerHeight / scale;
   const rows = Array.from({ length: rowsHeight }, (_, i) => i + 5);
@@ -75,6 +131,7 @@ function Root() {
     try {
       const response = await api.create.session();
       navigate(`/${response.data.sessionId}`);
+      window.location.reload();
     } catch (error) {
       console.error("Error creating session:", error);
     }
@@ -94,12 +151,16 @@ function Root() {
     }
   }, [sessionId, isConnected]);
 
+  const handleCreateSession = () => {
+    if (!sessionId) {
+      createSession();
+    }
+  };
+
   useEffect(() => {
     const handleKeyPress = (event: any) => {
       if (event.key === "m" || event.key === "M") {
-        if (!sessionId) {
-          createSession();
-        }
+        handleCreateSession();
       }
       if (event.key === "h" || event.key === "H") {
         setShowHelp(!showHelp);
@@ -154,24 +215,47 @@ function Root() {
     setShowHelp(false);
   };
 
+  const handleInputChange = (e: any) => {
+    setSessionIdInput(e.currentTarget?.value);
+  };
+
+  useEffect(() => {
+    if (sessionIdInput?.length === 4 && sessionId !== sessionIdInput) {
+      navigate(`/${sessionIdInput}`);
+      window.location.reload();
+    }
+  }, [sessionIdInput]);
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column" }}
       onTouchMove={handleTouchMove}
     >
-      {sessionId && (
-        <Slide direction="top" in={!isConnected} style={{ zIndex: 10 }}>
-          <Alert variant="solid" status={isConnected ? "success" : "error"}>
-            <AlertIcon />
-            <AlertTitle>
-              {isConnected ? "Connected" : `Disconnected`}
-            </AlertTitle>
-            <AlertDescription>
-              Session: <Badge>{sessionId}</Badge>
-            </AlertDescription>
-          </Alert>
-        </Slide>
-      )}
+      {/* <Slide direction="bottom" in style={{ zIndex: 10 }}> */}
+      <Alert
+        position="fixed"
+        bottom="0"
+        status={isConnected ? "success" : "info"}
+      >
+        <AlertIcon />
+        <AlertTitle>{isConnected ? "Connected" : `Disconnected`}</AlertTitle>
+        <Flex flex={1} />
+        {!sessionId && (
+          <StartSession handleCreateSession={handleCreateSession} />
+        )}
+        {sessionId && (
+          <NewSession
+            handleCreateSession={handleCreateSession}
+            setSessionIdInput={setSessionIdInput}
+          />
+        )}
+        <Box margin="5px" />
+        <ActiveSession
+          sessionIdInput={sessionIdInput}
+          handleInputChange={handleInputChange}
+        />
+      </Alert>
+      {/* </Slide> */}
 
       <Touch />
       <Help
