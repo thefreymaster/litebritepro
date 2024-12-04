@@ -43,9 +43,11 @@ export const Cell = ({
 
   const [active, setActive] = useState(false);
 
+  const emitActivated = () => socket.emit("cellActivated", { x, y, sessionId });
+
   const handleHover = async () => {
     setActive(true);
-    socket.emit("cellActivated", { x, y, sessionId });
+    emitActivated();
   };
 
   useEffect(() => {
@@ -60,12 +62,7 @@ export const Cell = ({
   useEffect(() => {
     if (currentPosition.x === x && currentPosition.y === y) {
       setActive(true);
-      console.log({
-        x: currentPosition.x,
-        y: currentPosition.y,
-        sessionId,
-      });
-      socket.emit("cellActivated", { x, y, sessionId });
+      emitActivated();
     }
   }, [currentPosition, sessionId]);
 

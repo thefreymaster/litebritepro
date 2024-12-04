@@ -7,9 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api/api";
 import { io } from "socket.io-client";
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
+  Text,
+  useTheme,
   Box,
   Flex,
   HStack,
@@ -28,27 +27,26 @@ const NewSession = ({ handleCreateSession, setSessionIdInput }: any) => {
   const navigate = useNavigate();
 
   return (
-    <AlertDescription>
+    <Text>
       <Tooltip hasArrow label="Restart">
         <IconButton
           aria-label={"restart"}
           icon={<VscDebugRestart />}
           onClick={() => {
             navigate("/");
-            socket.emit("clear");
-            setSessionIdInput();
+            setSessionIdInput("");
             handleCreateSession();
           }}
         >
           Restart
         </IconButton>
       </Tooltip>
-    </AlertDescription>
+    </Text>
   );
 };
 
 const StartSession = ({ handleCreateSession }: any) => (
-  <AlertDescription>
+  <Text>
     <HStack>
       <Tooltip hasArrow label="Start">
         <IconButton
@@ -60,18 +58,19 @@ const StartSession = ({ handleCreateSession }: any) => (
         </IconButton>
       </Tooltip>
     </HStack>
-  </AlertDescription>
+  </Text>
 );
 
 const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
-  <AlertDescription>
+  <Text>
     <Input
       maxW="120px"
       value={sessionIdInput}
       onChange={(e) => handleInputChange(e)}
       placeholder="Join Code"
+      color="white"
     />
-  </AlertDescription>
+  </Text>
 );
 
 function getRandomChakraColorName() {
@@ -103,6 +102,7 @@ function Root() {
   //   const { isMobile } = useDeviceSize();
   const navigate = useNavigate();
   const { sessionId } = useParams();
+  const theme = useTheme();
 
   const [sessionIdInput, setSessionIdInput] = useState(sessionId);
 
@@ -176,7 +176,11 @@ function Root() {
         setScale(scale + 1);
       }
       if (event.key === "p" || event.key === "P") {
-        setPalette(getRandomChakraColorName());
+        const color = getRandomChakraColorName();
+        setPalette(color);
+        if (sessionId) {
+          socket.emit("palette", { palette: color });
+        }
       }
       if (event.key === "s" || event.key === "S") {
         const getPalatte = () => {
@@ -227,39 +231,17 @@ function Root() {
     }
   }, [sessionIdInput]);
 
+  useEffect(() => {
+    socket.on("palette", (palette) => {
+      setPalette(palette);
+    });
+  }, [palette]);
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column" }}
       onTouchMove={handleTouchMove}
     >
-      {/* <Slide direction="bottom" in style={{ zIndex: 10 }}> */}
-      <Alert
-        position="fixed"
-        bottom="0"
-        status={isConnected ? "success" : "info"}
-      >
-        <Box margin="2">
-          {isConnected ? <PiPlugsConnectedFill /> : <LuUnplug />}
-        </Box>
-        <AlertTitle>{isConnected ? `Coop` : "Solo"}</AlertTitle>
-        <Flex flex={1} />
-        {!sessionId && (
-          <StartSession handleCreateSession={handleCreateSession} />
-        )}
-        {sessionId && (
-          <NewSession
-            handleCreateSession={handleCreateSession}
-            setSessionIdInput={setSessionIdInput}
-          />
-        )}
-        <Box margin="5px" />
-        <ActiveSession
-          sessionIdInput={sessionIdInput}
-          handleInputChange={handleInputChange}
-        />
-      </Alert>
-      {/* </Slide> */}
-
       <Touch />
       <Help
         setPalette={setPalette}
@@ -287,6 +269,41 @@ function Root() {
           ))}
         </div>
       ))}
+      <Box
+        position="fixed"
+        bottom="0"
+        display="flex"
+        flexDir="row"
+        minW="100%"
+        padding="2"
+        minH="5vh"
+        backgroundColor={theme.colors?.[palette || "gray"]["900"]}
+        alignItems="center"
+      >
+        <Box margin="2">
+          {isConnected ? (
+            <PiPlugsConnectedFill color="white" />
+          ) : (
+            <LuUnplug color="white" />
+          )}
+        </Box>
+        <Text color="white">{isConnected ? `Coop` : "Solo"}</Text>
+        <Flex flex={1} />
+        {!sessionId && (
+          <StartSession handleCreateSession={handleCreateSession} />
+        )}
+        {sessionId && (
+          <NewSession
+            handleCreateSession={handleCreateSession}
+            setSessionIdInput={setSessionIdInput}
+          />
+        )}
+        <Box margin="5px" />
+        <ActiveSession
+          sessionIdInput={sessionIdInput}
+          handleInputChange={handleInputChange}
+        />
+      </Box>
     </div>
   );
 }

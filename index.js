@@ -62,6 +62,10 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("clear");
   });
 
+  socket.on("palette", ({ palette }) => {
+    socket.broadcast.emit("palette", palette);
+  });
+
   socket.on("user-conection", ({ userId, sessionId }) => {
     console.log({ connected: true, userId, sessionId });
   });
