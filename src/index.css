@@ -1,11 +1,50 @@
-body:hover{
+body:hover {
   cursor: crosshair;
 }
-body{
-  overflow: hidden;
-
-}
-
-html{
+body {
   overflow: hidden;
 }
+
+html {
+  overflow: hidden;
+}
+
+@keyframes moveInCircle {
+  0% {
+    left: calc(50vw - 50px);
+    top: calc(50vh - 112px); /* Top of the circle */
+  }
+  12.5% {
+    left: calc(50vw - 25px);
+    top: calc(50vh - 100px); /* Upper-right quadrant */
+  }
+  25% {
+    left: calc(50vw + 50px); /* Right side of the circle */
+    top: calc(50vh - 62px);
+  }
+  37.5% {
+    left: calc(50vw + 25px);
+    top: calc(50vh - 25px); /* Lower-right quadrant */
+  }
+  50% {
+    left: calc(50vw - 50px);
+    top: calc(50vh - 12px); /* Bottom of the circle */
+  }
+  62.5% {
+    left: calc(50vw - 125px);
+    top: calc(50vh - 25px); /* Lower-left quadrant */
+  }
+  75% {
+    left: calc(50vw - 150px); /* Left side of the circle */
+    top: calc(50vh - 62px);
+  }
+  87.5% {
+    left: calc(50vw - 125px);
+    top: calc(50vh - 100px); /* Upper-left quadrant */
+  }
+  100% {
+    left: calc(50vw - 50px); /* Back to the top */
+    top: calc(50vh - 112px);
+  }
+}
+
