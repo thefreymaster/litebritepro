@@ -52,6 +52,9 @@ export const Cell = ({
     socket.on(`${sessionId}/${x}-${y}`, () => {
       setActive(true);
     });
+    socket.on("clear", () => {
+      setActive(false);
+    });
   }, [x, y]);
 
   useEffect(() => {
@@ -63,7 +66,6 @@ export const Cell = ({
         sessionId,
       });
       socket.emit("cellActivated", { x, y, sessionId });
-
     }
   }, [currentPosition, sessionId]);
 
@@ -77,6 +79,7 @@ export const Cell = ({
     const handleKeyPress = (event: any) => {
       if (event.key === "c" || event.key === "C") {
         setActive(false);
+        socket.emit("clear");
       }
     };
 

@@ -8,7 +8,14 @@ import { Cell } from "../../components/Cell/Cell";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api/api";
 import { io } from "socket.io-client";
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Slide } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Slide,
+} from "@chakra-ui/react";
 
 const socket = io(window.location.origin);
 
@@ -44,8 +51,8 @@ function Root() {
 
   const rowsHeight = window.innerWidth / scale;
   const rowsWidth = window.innerHeight / scale;
-  const rows = Array.from({ length: rowsHeight }, (_, i) => i + 1);
-  const columns = Array.from({ length: rowsWidth }, (_, i) => i + 1);
+  const rows = Array.from({ length: rowsHeight }, (_, i) => i + 5);
+  const columns = Array.from({ length: rowsWidth }, (_, i) => i + 5);
 
   //   useEffect(() => {
   //     if (isMobile) {
@@ -81,6 +88,7 @@ function Root() {
     if (sessionId) {
       socket.on("connect", () => {
         setIsConnected(true);
+        socket.emit("user-conection", { userId: socket.id, sessionId });
         console.log("Connected to server with ID:", socket.id);
       });
     }
@@ -100,10 +108,10 @@ function Root() {
         setAllActive(!allActive);
       }
       if (event.key === "-") {
-        setScale(scale + 1);
+        setScale(scale - 1);
       }
       if (event.key === "=") {
-        setScale(scale - 1);
+        setScale(scale + 1);
       }
       if (event.key === "p" || event.key === "P") {
         setPalette(getRandomChakraColorName());
@@ -151,13 +159,19 @@ function Root() {
       style={{ display: "flex", flexDirection: "column" }}
       onTouchMove={handleTouchMove}
     >
-      <Slide direction="top" in={!isConnected} style={{ zIndex: 10 }}>
-        <Alert variant="solid" status={isConnected ? "success" : "error"}>
-          <AlertIcon />
-          <AlertTitle>{isConnected ? "Connected" : `Disconnected`}</AlertTitle>
-          <AlertDescription>Session: <Badge>{sessionId}</Badge></AlertDescription>
-        </Alert>
-      </Slide>
+      {sessionId && (
+        <Slide direction="top" in={!isConnected} style={{ zIndex: 10 }}>
+          <Alert variant="solid" status={isConnected ? "success" : "error"}>
+            <AlertIcon />
+            <AlertTitle>
+              {isConnected ? "Connected" : `Disconnected`}
+            </AlertTitle>
+            <AlertDescription>
+              Session: <Badge>{sessionId}</Badge>
+            </AlertDescription>
+          </Alert>
+        </Slide>
+      )}
 
       <Touch />
       <Help

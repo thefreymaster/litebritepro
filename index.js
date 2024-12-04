@@ -6,10 +6,9 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 
- // Get __dirname equivalent in ES modules
+// Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 // Initialize Express  ------------------------------------------------------------
 const app = express();
@@ -46,8 +45,6 @@ app.post("/v1/cell", (req, res) => {
 let activeCells = new Set();
 
 io.on("connection", (socket) => {
-  console.log("A user connected", socket);
-
   // Send the current active cells to the newly connected client
   socket.emit("initialize", Array.from(activeCells)); // Convert Set to Array for serialization
 
@@ -59,6 +56,14 @@ io.on("connection", (socket) => {
 
     // Broadcast the updated cell to all connected clients
     socket.broadcast.emit(`${sessionId}/${x}-${y}`, { x, y });
+  });
+
+  socket.on("clear", () => {
+    socket.broadcast.emit("clear");
+  });
+
+  socket.on("user-conection", ({ userId, sessionId }) => {
+    console.log({ connected: true, userId, sessionId });
   });
 
   socket.on("disconnect", () => {
