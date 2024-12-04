@@ -20,6 +20,7 @@ import {
   Text,
   Fade,
   IconButton,
+  Badge,
 } from "@chakra-ui/react";
 import { COLORS } from "./colors";
 import { useEffect, useState } from "react";
@@ -66,7 +67,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
           }}
         >
           <HStack>
-            <Kbd>H</Kbd>
+            <Kbd color="black">H</Kbd>
             <Text>Tap H for help</Text>
           </HStack>
         </Fade>
@@ -96,6 +97,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
                   ))}
                 </Select>
               </FormControl>
+              <Badge>v0.1.0</Badge>
             </VStack>
           </ModalBody>
           <ModalFooter />

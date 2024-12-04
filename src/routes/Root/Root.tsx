@@ -252,18 +252,22 @@ function Root() {
       >
         <Box margin="2">
           {isConnected ? (
-            <PiPlugsConnectedFill color="white" />
+            <PiPlugsConnectedFill
+              color={theme.colors?.[palette || "gray"]["300"]}
+            />
           ) : (
-            <LuUnplug color="white" />
+            <LuUnplug color={theme.colors?.[palette || "gray"]["300"]} />
           )}
         </Box>
-        <Text color="white">{isConnected ? `Coop` : "Solo"}</Text>
+        <Text color={theme.colors?.[palette || "gray"]["300"]}>
+          {isConnected ? `Coop` : "Solo"}
+        </Text>
         <Flex flex={1} />
         <IconButton
           icon={<RiPaletteFill />}
           aria-label={"palette"}
           onClick={handlePaletteChange}
-          colorScheme={palette}
+          colorScheme={palette ?? "gray"}
         />
         <Box margin="5px" />
         {!sessionId && (
