@@ -26,6 +26,7 @@ import { COLORS } from "./colors";
 import { useEffect, useState } from "react";
 import { LuHelpCircle } from "react-icons/lu";
 import { useDeviceSize } from "./hooks/useDeviceSize";
+import { VERSION } from "./version";
 
 const ShortCut = ({ shortcut, title }) => {
   return (
@@ -97,7 +98,7 @@ export const Help = ({ showHelp, onClose, palette, setPalette }: any) => {
                   ))}
                 </Select>
               </FormControl>
-              <Badge>v0.1.0</Badge>
+              <Badge>{VERSION}</Badge>
             </VStack>
           </ModalBody>
           <ModalFooter />
