@@ -23,6 +23,7 @@ import { PiPlugsConnectedFill } from "react-icons/pi";
 import { RiPaletteFill } from "react-icons/ri";
 import { MdCleaningServices } from "react-icons/md";
 import { TiMinus, TiPlus } from "react-icons/ti";
+import { useDeviceSize } from "../../hooks/useDeviceSize";
 
 const socket = io(window.location.origin);
 
@@ -89,6 +90,7 @@ function Root() {
   const navigate = useNavigate();
   const { sessionId } = useParams();
   const theme = useTheme();
+  const { isDesktop } = useDeviceSize();
 
   const [sessionIdInput, setSessionIdInput] = useState(sessionId);
 
@@ -261,8 +263,6 @@ function Root() {
         backgroundColor={theme.colors?.[palette || "gray"]["900"]}
         alignItems="center"
       >
-        {/* <Text color={theme.colors?.[palette || "gray"]["300"]} fontWeight="medium">LiteBritePro</Text>
-        <Flex flex={1} /> */}
         <Box margin="2">
           {isConnected ? (
             <PiPlugsConnectedFill
@@ -276,22 +276,26 @@ function Root() {
           {isConnected ? `Coop` : "Solo"}
         </Text>
         <Flex flex={1} />
-        <Tooltip label="Decrease Scale" hasArrow>
-          <IconButton
-            icon={<TiMinus />}
-            marginRight="5px"
-            aria-label={"palette"}
-            onClick={() => setScale(scale - 1)}
-          />
-        </Tooltip>
-        <Tooltip label="Increase Scale" hasArrow>
-          <IconButton
-            icon={<TiPlus />}
-            marginRight="5px"
-            aria-label={"palette"}
-            onClick={() => setScale(scale + 1)}
-          />
-        </Tooltip>
+        {isDesktop && (
+          <>
+            <Tooltip label="Decrease Scale" hasArrow>
+              <IconButton
+                icon={<TiMinus />}
+                marginRight="5px"
+                aria-label={"palette"}
+                onClick={() => setScale(scale - 1)}
+              />
+            </Tooltip>
+            <Tooltip label="Increase Scale" hasArrow>
+              <IconButton
+                icon={<TiPlus />}
+                marginRight="5px"
+                aria-label={"palette"}
+                onClick={() => setScale(scale + 1)}
+              />
+            </Tooltip>
+          </>
+        )}
         <Tooltip label="Clear board" hasArrow>
           <IconButton
             icon={<MdCleaningServices />}
