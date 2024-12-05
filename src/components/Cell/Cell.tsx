@@ -47,7 +47,9 @@ export const Cell = ({
 
   const handleHover = async () => {
     setActive(true);
-    emitActivated();
+    if (sessionId) {
+      emitActivated();
+    }
   };
 
   useEffect(() => {
@@ -62,7 +64,9 @@ export const Cell = ({
   useEffect(() => {
     if (currentPosition.x === x && currentPosition.y === y) {
       setActive(true);
-      emitActivated();
+      if (sessionId) {
+        emitActivated();
+      }
     }
   }, [currentPosition, sessionId]);
 
