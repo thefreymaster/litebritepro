@@ -21,11 +21,14 @@ import { VscDebugStart } from "react-icons/vsc";
 import { LuUnplug } from "react-icons/lu";
 import { PiPlugsConnectedFill } from "react-icons/pi";
 import { RiPaletteFill } from "react-icons/ri";
+import { MdCleaningServices } from "react-icons/md";
+import { TiMinus, TiPlus } from "react-icons/ti";
 
 const socket = io(window.location.origin);
 
 const StartSession = ({ handleCreateSession }: any) => (
   <>
+    <Box marginLeft="10px" />
     <Text>
       <HStack>
         <Tooltip hasArrow label="Start">
@@ -39,7 +42,7 @@ const StartSession = ({ handleCreateSession }: any) => (
         </Tooltip>
       </HStack>
     </Text>
-    <Box margin="5px" />
+    <Box marginRight="5px" />
   </>
 );
 
@@ -195,6 +198,13 @@ function Root() {
     setSessionIdInput(e.currentTarget?.value);
   };
 
+  const handleClearBoard = () => {
+    if (sessionId) {
+      return socket.emit("clear");
+    }
+    return window.location.reload();
+  };
+
   useEffect(() => {
     if (sessionIdInput?.length === 4 && sessionId !== sessionIdInput) {
       navigate(`/${sessionIdInput}`);
@@ -266,14 +276,38 @@ function Root() {
           {isConnected ? `Coop` : "Solo"}
         </Text>
         <Flex flex={1} />
+        <Tooltip label="Decrease Scale" hasArrow>
+          <IconButton
+            icon={<TiMinus />}
+            marginRight="5px"
+            aria-label={"palette"}
+            onClick={() => setScale(scale - 1)}
+          />
+        </Tooltip>
+        <Tooltip label="Increase Scale" hasArrow>
+          <IconButton
+            icon={<TiPlus />}
+            marginRight="5px"
+            aria-label={"palette"}
+            onClick={() => setScale(scale + 1)}
+          />
+        </Tooltip>
+        <Tooltip label="Clear board" hasArrow>
+          <IconButton
+            icon={<MdCleaningServices />}
+            marginRight="5px"
+            aria-label={"palette"}
+            onClick={handleClearBoard}
+          />
+        </Tooltip>
         <Tooltip label="Color Palette" hasArrow>
           <IconButton
             icon={<RiPaletteFill />}
+            marginRight="5px"
             aria-label={"palette"}
             onClick={handlePaletteChange}
           />
         </Tooltip>
-        <Box margin="5px" />
         {!sessionId && (
           <StartSession handleCreateSession={handleCreateSession} />
         )}
