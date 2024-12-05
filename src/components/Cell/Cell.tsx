@@ -55,7 +55,6 @@ export const Cell = ({
       setActive(true);
     });
     socket.on("clear-board", () => {
-      debugger
       setActive(false);
     });
   }, [x, y]);
