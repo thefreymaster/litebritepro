@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clear", () => {
-    socket.broadcast.emit("clear", true);
+    socket.broadcast.emit("clear-board", true);
   });
 
   socket.on("palette", ({ palette }) => {

@@ -54,7 +54,8 @@ export const Cell = ({
     socket.on(`${sessionId}/${x}-${y}`, () => {
       setActive(true);
     });
-    socket.on("clear", () => {
+    socket.on("clear-board", () => {
+      debugger
       setActive(false);
     });
   }, [x, y]);
