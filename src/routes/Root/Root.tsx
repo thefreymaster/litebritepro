@@ -21,9 +21,9 @@ import { VscDebugStart } from "react-icons/vsc";
 import { LuUnplug } from "react-icons/lu";
 import { PiPlugsConnectedFill } from "react-icons/pi";
 import { RiPaletteFill } from "react-icons/ri";
-import { MdCleaningServices } from "react-icons/md";
 import { TiMinus, TiPlus } from "react-icons/ti";
 import { useDeviceSize } from "../../hooks/useDeviceSize";
+import { IoTrashSharp } from "react-icons/io5";
 
 const socket = io(window.location.origin);
 
@@ -298,7 +298,7 @@ function Root() {
         )}
         <Tooltip label="Clear board" hasArrow>
           <IconButton
-            icon={<MdCleaningServices />}
+            icon={<IoTrashSharp />}
             marginRight="5px"
             aria-label={"palette"}
             onClick={handleClearBoard}

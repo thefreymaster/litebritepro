@@ -9,7 +9,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { LuUnplug } from "react-icons/lu";
-import { MdCleaningServices } from "react-icons/md";
+import { IoTrashSharp } from "react-icons/io5";
 import { PiPlugsConnectedFill } from "react-icons/pi";
 import { RiPaletteFill } from "react-icons/ri";
 import { TiMinus, TiPlus } from "react-icons/ti";
@@ -112,15 +112,15 @@ export const ActionsFooter = ({
         <IconButton
           icon={<TiPlus />}
           marginRight="5px"
-          aria-label={"palette"}
+          aria-label={"increase"}
           onClick={() => setScale(scale + 1)}
         />
       </Tooltip>
       <Tooltip label="Clear board" hasArrow>
         <IconButton
-          icon={<MdCleaningServices />}
+          icon={<IoTrashSharp />}
           marginRight="5px"
-          aria-label={"palette"}
+          aria-label={"trash"}
           onClick={handleClearBoard}
         />
       </Tooltip>
