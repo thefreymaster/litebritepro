@@ -15,6 +15,7 @@ import {
   IconButton,
   Input,
   Tooltip,
+  Badge,
   // Slide,
 } from "@chakra-ui/react";
 import { VscDebugStart } from "react-icons/vsc";
@@ -24,6 +25,7 @@ import { RiPaletteFill } from "react-icons/ri";
 import { TiMinus, TiPlus } from "react-icons/ti";
 import { useDeviceSize } from "../../hooks/useDeviceSize";
 import { IoTrashSharp } from "react-icons/io5";
+import { Logo } from "../../components/Logo";
 
 const socket = io(window.location.origin);
 
@@ -34,6 +36,7 @@ const StartSession = ({ handleCreateSession }: any) => (
       <HStack>
         <Tooltip hasArrow label="Start">
           <IconButton
+            borderRadius="100px"
             icon={<VscDebugStart />}
             onClick={handleCreateSession}
             aria-label={"start"}
@@ -47,18 +50,39 @@ const StartSession = ({ handleCreateSession }: any) => (
   </>
 );
 
-const ActiveSession = ({ sessionIdInput, handleInputChange }: any) => (
-  <Text>
-    <Input
-      maxW="120px"
-      value={sessionIdInput}
-      onChange={(e) => handleInputChange(e)}
-      placeholder="Join Code"
-      color="white"
-      variant="filled"
-    />
-  </Text>
-);
+const ActiveSession = ({ sessionIdInput, handleInputChange, palette }: any) => {
+  const theme = useTheme();
+
+  return (
+    <Text>
+      <Input
+        borderRadius="100px"
+        maxW="120px"
+        value={sessionIdInput}
+        onChange={(e) => handleInputChange(e)}
+        placeholder="Join Code"
+        color="white"
+        variant="filled"
+        outline="none"
+        colorScheme="brand"
+        backgroundColor={theme.colors?.[palette || "gray"]["600"]}
+        textAlign="center"
+        _hover={{
+          backgroundColor: "brand.700",
+        }}
+        _focus={{
+          outline: "none",
+          borderColor: "inherit",
+          "-webkit-box-shadow": "none",
+          "box-shadow": "none",
+          borderRadius: "100px",
+          backgroundColor: theme.colors?.[palette || "gray"]["800"],
+          color: theme.colors?.[palette || "gray"]["100"],
+        }}
+      />
+    </Text>
+  );
+};
 
 function getRandomChakraColorName() {
   const chakraColorNames = [
@@ -263,23 +287,13 @@ function Root() {
         backgroundColor={theme.colors?.[palette || "gray"]["900"]}
         alignItems="center"
       >
-        <Box margin="2">
-          {isConnected ? (
-            <PiPlugsConnectedFill
-              color={theme.colors?.[palette || "gray"]["300"]}
-            />
-          ) : (
-            <LuUnplug color={theme.colors?.[palette || "gray"]["300"]} />
-          )}
-        </Box>
-        <Text color={theme.colors?.[palette || "gray"]["300"]}>
-          {isConnected ? `Coop` : "Solo"}
-        </Text>
+        <Logo palette={palette} />
         <Flex flex={1} />
         {isDesktop && (
           <>
             <Tooltip label="Decrease Scale" hasArrow>
               <IconButton
+                borderRadius="100px"
                 icon={<TiMinus />}
                 marginRight="5px"
                 aria-label={"palette"}
@@ -288,6 +302,7 @@ function Root() {
             </Tooltip>
             <Tooltip label="Increase Scale" hasArrow>
               <IconButton
+                borderRadius="100px"
                 icon={<TiPlus />}
                 marginRight="5px"
                 aria-label={"palette"}
@@ -298,6 +313,7 @@ function Root() {
         )}
         <Tooltip label="Clear board" hasArrow>
           <IconButton
+            borderRadius="100px"
             icon={<IoTrashSharp />}
             marginRight="5px"
             aria-label={"palette"}
@@ -306,18 +322,45 @@ function Root() {
         </Tooltip>
         <Tooltip label="Color Palette" hasArrow>
           <IconButton
+            borderRadius="100px"
             icon={<RiPaletteFill />}
             marginRight="5px"
             aria-label={"palette"}
             onClick={handlePaletteChange}
           />
         </Tooltip>
+        <Flex flex={1} />
+
+        <Badge
+          colorScheme={theme.colors?.[palette || "gray"]["600"]}
+          display="flex"
+          flexDir="row"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Box margin="2">
+            {isConnected ? (
+              <PiPlugsConnectedFill
+                color={theme.colors?.[palette || "gray"]["300"]}
+              />
+            ) : (
+              <LuUnplug color={theme.colors?.[palette || "gray"]["300"]} />
+            )}
+          </Box>
+          <Text
+            marginRight="20px"
+            color={theme.colors?.[palette || "gray"]["300"]}
+          >
+            {isConnected ? `Coop` : "Solo"}
+          </Text>
+        </Badge>
         {!sessionId && (
           <StartSession handleCreateSession={handleCreateSession} />
         )}
         <ActiveSession
           sessionIdInput={sessionIdInput}
           handleInputChange={handleInputChange}
+          palette={palette}
         />
       </Box>
     </div>
