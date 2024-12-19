@@ -6,13 +6,8 @@ import theme from "./theme.ts";
 
 // Import the functions you need from the SDKs you need
 import { ChakraProvider } from "@chakra-ui/react";
-import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
-// Initialize Firebase
-// @ts-ignore
-const analytics = getAnalytics(app);
 
 const [html] = document.getElementsByTagName("html");
 
