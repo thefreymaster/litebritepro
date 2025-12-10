@@ -23,7 +23,6 @@ import { VscDebugStart } from "react-icons/vsc";
 import { LuUnplug } from "react-icons/lu";
 import { PiPlugsConnectedFill } from "react-icons/pi";
 import { RiPaletteFill } from "react-icons/ri";
-import { useDeviceSize } from "../../hooks/useDeviceSize";
 import { IoTrashSharp } from "react-icons/io5";
 import { Logo } from "../../components/Logo";
 
@@ -108,11 +107,9 @@ function Root() {
   const [allActive, setAllActive] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  //   const { isMobile } = useDeviceSize();
   const navigate = useNavigate();
   const { sessionId } = useParams();
   const theme = useTheme();
-  const { isDesktop } = useDeviceSize();
 
   const [sessionIdInput, setSessionIdInput] = useState(sessionId);
 
