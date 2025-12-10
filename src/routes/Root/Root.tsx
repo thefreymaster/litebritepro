@@ -54,7 +54,8 @@ const ActiveSession = ({ sessionIdInput, handleInputChange, palette }: any) => {
     <Text>
       <Input
         borderRadius="100px"
-        maxW="120px"
+        minW="110px"
+        maxW="110px"
         value={sessionIdInput}
         onChange={(e) => handleInputChange(e)}
         placeholder="Join Code"
@@ -301,7 +302,7 @@ function Root() {
                 )}
               </Box>
               <Text
-                marginRight="20px"
+                marginRight="10px"
                 color={theme.colors?.[palette || "gray"]["300"]}
               >
                 {isConnected ? `Coop` : "Solo"}
@@ -333,11 +334,6 @@ function Root() {
             </Tooltip>
           </HStack>
         </GridItem>
-        <GridItem
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-end"
-        ></GridItem>
       </Grid>
     </div>
   );
